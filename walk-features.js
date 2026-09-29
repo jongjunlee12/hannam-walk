@@ -1,5 +1,7 @@
 'use strict';
 let landmarkLabels=[],labelFrame=0,arrivalStop=null,arrivalIndex=-1;
+let arrivalAutoTimer=null;
+function cancelArrivalAuto(){clearTimeout(arrivalAutoTimer);arrivalAutoTimer=null;}
 const featureUI=document.createElement('div');
 featureUI.innerHTML=`<div class="day-alternatives" id="alternatives" aria-label="같은 목적의 대안 코스"></div><p class="day-note" id="day-note"></p><details class="landmark-index"><summary>거점 20곳 모두 보기</summary><div id="landmark-index"></div></details>`;
 $('route-description').after(featureUI);
@@ -84,6 +86,7 @@ function renderAlternatives(){
   scheduleLabels();
 }
 function showArrival(stop,index,arrived=true){
+  cancelArrivalAuto();
   arrivalStop=stop;arrivalIndex=index;arrivalCard.replaceChildren();arrivalCard.hidden=false;
   const close=document.createElement('button');close.className='arrival-close';close.textContent='×';close.setAttribute('aria-label','장소 카드 닫기');close.onclick=hideArrival;
   const img=document.createElement('img');img.src=stop.image;img.alt=stop.photo?`${stop.name} 외관 사진`:`${stop.name} 인근 건물 데이터 모형`;img.onerror=()=>{img.hidden=true;};
@@ -107,11 +110,22 @@ function showArrival(stop,index,arrived=true){
   const action=document.createElement('button');action.className='primary';action.textContent=arrived&&index<route.stops.length-1?'다음 장소로 걷기': '닫고 지도 보기';
   action.onclick=()=>{hideArrival();if(arrived&&index<route.stops.length-1){setPlaying(true);speak(`continue-${index}`,`${stop.name} 방문을 마치고 ${route.stops[index+1].name} 쪽으로 출발해요.`);renderPosition();}};
   arrivalCard.append(close,img,tag,title,warning,text,highlights,tip,stay,legLine,infoSource,caption,action);
+  if(arrived&&index>=0&&index<route.stops.length-1){
+    const pendingRoute=route;
+    const autoNote=document.createElement('p');autoNote.className='arrival-leg';autoNote.textContent='10초 후 다음 장소로 자동 출발합니다.';
+    const hold=document.createElement('button');hold.type='button';hold.textContent='자동 출발 멈추고 더 보기';
+    hold.onclick=()=>{cancelArrivalAuto();autoNote.textContent='자동 출발을 멈췄어요. 준비되면 다음 장소로 걷기를 누르세요.';hold.hidden=true;};
+    arrivalCard.append(autoNote,hold);
+    arrivalAutoTimer=setTimeout(()=>{
+      arrivalAutoTimer=null;
+      if(route===pendingRoute&&arrivalStop===stop&&!arrivalCard.hidden&&!playing)action.onclick();
+    },10000);
+  }
   // Offset only for the portion of the screen-edge card overlapping the map.
   if(arrived){const panel=document.querySelector('.map-panel').getBoundingClientRect(),card=arrivalCard.getBoundingClientRect();const phone=matchMedia('(max-width:760px)').matches;const overlap=phone?Math.max(0,panel.bottom-card.top):Math.max(0,panel.right-card.left);map.easeTo({center:stop.coordinates,offset:phone?[0,-Math.min(overlap/2,panel.height/4)]:[-overlap/2,0],duration:500});}
   positionArrival();scheduleLabels();
 }
-function hideArrival(){arrivalCard.hidden=true;arrivalStop=null;$('bubble').hidden=!$('speech').checked;scheduleLabels();}
+function hideArrival(){cancelArrivalAuto();arrivalCard.hidden=true;arrivalStop=null;$('bubble').hidden=!$('speech').checked;scheduleLabels();}
 function positionArrival(){
   if(!arrivalStop||arrivalCard.hidden)return;
   const top=Math.min(96,Math.max(12,innerHeight*.12));

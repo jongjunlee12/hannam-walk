@@ -1,6 +1,15 @@
 /* Same URL, a map-first phone layout. Desktop styling stays unchanged. */
 .share-link{margin-left:0;font-size:15px;white-space:nowrap}
 .mobile-route-toggle{display:none}
+.interest-buttons{display:flex;gap:6px;margin:12px 0}
+.interest-buttons button{flex:1;min-width:0;min-height:44px;font-size:14px;padding:8px 4px;white-space:nowrap;border-radius:12px}
+.interest-buttons button[aria-pressed="true"]{background:#172e49;color:#fff;border-color:#172e49}
+.map-top>div{display:flex;flex-wrap:wrap;gap:5px}
+body.map-focused{overflow:hidden}
+.map-focused>header,.map-focused .intro,.map-focused .route-panel,.map-focused .market,.map-focused>footer{display:none}
+.map-focused .workspace .map-panel{position:fixed;inset:0;width:100%;height:100vh;height:100dvh;min-height:0;max-height:none;border:0;border-radius:0;z-index:10}
+.interest-buttons button:focus-visible{outline:3px solid #0064e0;outline-offset:2px}
+@media(prefers-reduced-motion:no-preference){.interest-buttons button,#play{transition:background-color .18s,box-shadow .18s}.interest-buttons button:active,#play:active:not(:disabled){transform:scale(.97)}}
 #play{background:#c62828;color:#fff;border:2px solid #c62828;font-weight:800;box-shadow:0 4px 12px #c6282833}
 #play:hover:not(:disabled){background:#a91d1d;border-color:#a91d1d}
 #play:focus-visible{outline:3px solid #172e49;outline-offset:3px}
@@ -34,6 +43,7 @@
   .map-top{top:12px;left:12px;right:12px;gap:6px}
   .map-top button{font-size:13px;padding:8px;min-height:44px}
   .map-tag{font-size:10px}
+  .map-top .map-tag{display:none}
   .map-panel .walker,.map-panel .walker svg{width:22.4px;height:32.2px}
   .map-panel .speech-bubble{bottom:40px;width:190px;padding:10px 12px;font-size:15px}
   .speech-bubble .bubble-leg{font-size:12px;line-height:1.45}

@@ -53,6 +53,7 @@ function selectRoute() {
     fitRoute();
   }
   renderPosition();
+  document.dispatchEvent(new CustomEvent('walk-route-change'));
 }
 function renderPosition() {
   if(!route || !marker) return;
@@ -134,6 +135,8 @@ async function start() {
     if(infoResponse.ok){const infoById=new Map((await infoResponse.json()).map(p=>[String(p.id),p]));data.landmarks.forEach(poi=>{poi.info=infoById.get(String(poi.id))||null;});data.routes.forEach(r=>r.stops.forEach(stop=>{stop.info=infoById.get(String(stop.id))||null;}));}
   } catch (error) { console.error('place-info.json 로딩 실패:', error); }
   data.routes.forEach((r,i)=>$('route').add(new Option(r.name,i)));$('route').disabled=false;
+  const sharedRoute=new URLSearchParams(location.search).get('route');
+  if(sharedRoute!==null&&/^\d+$/.test(sharedRoute)&&Number(sharedRoute)<data.routes.length)$('route').value=String(Number(sharedRoute));
   [...data.months].reverse().forEach(m=>$('month').add(new Option(monthLabel(m),m)));
   map=new maplibregl.Map({container:'map',style:{version:8,sources:{carto:{type:'raster',tiles:['https://basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png?key=cb1_2jst_1_f20036d2498b9af9e4827f69'],tileSize:256,attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>'}},layers:[{id:'background',type:'raster',source:'carto'}]},center:[127.003,37.536],zoom:15.8,pitch:52,bearing:-18,antialias:true});
   map.addControl(new maplibregl.NavigationControl(),'top-right');
