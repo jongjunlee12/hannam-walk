@@ -1,0 +1,15 @@
+.visitor-review{padding:16px;border:1px solid #d9e5e3;border-radius:16px;background:#f4f8f7;margin:14px 0}
+.visitor-review h4,.insight-chart h4{font-size:19px;margin:0 0 10px}
+.visitor-review p{font-size:17px;line-height:1.65}.visitor-review small{display:block;color:#526773;font-size:13px;line-height:1.5}
+.visitor-review a,.store-detail>a{color:#0057ad;font-size:15px;display:inline-block;padding:8px 0}
+.review-links{display:flex;flex-wrap:wrap;gap:4px 16px}
+.store-analytics{margin-top:22px;border-top:1px solid #d9e2e7;padding-top:16px}
+.store-analytics>summary{cursor:pointer;font-weight:700;font-size:19px;min-height:44px;padding:10px 0}
+.store-analytics .metric-row{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}.store-analytics .metric-row>div{flex:1;min-width:120px}.store-analytics .metric-row strong{font-size:22px}
+.analytics-note{padding:12px;background:#fff7e5;border-radius:12px;font-size:14px;line-height:1.6}
+.insight-chart{margin:18px 0;padding:16px;border:1px solid #dde5ea;border-radius:16px}
+.distribution-row{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;margin:12px 0;font-size:15px}
+.distribution-track{width:100%;height:9px;border-radius:10px;background:#eef2f5;overflow:hidden}.distribution-track i{display:block;height:100%;background:#7eabc4;border-radius:10px}
+.age-radar{display:block;width:100%;max-width:380px;margin:0 auto}.insight-chart small{font-size:13px;color:#526773}
+#arrival-card .visitor-review{padding:12px}#arrival-card .visitor-review h4{font-size:17px}
+@media(max-width:760px){.visitor-review{padding:12px}.insight-chart{padding:12px}.store-analytics>summary{font-size:17px}.distribution-row{font-size:14px}.store-analytics .metric-row strong{font-size:20px}}

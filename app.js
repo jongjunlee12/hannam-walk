@@ -124,11 +124,13 @@ function selectStore(id,fly) {
   const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 600 130');svg.classList.add('chart');svg.setAttribute('role','img');svg.setAttribute('aria-label',months.map((m,i)=>`${monthLabel(m)} ${fmt(nums[i])} 만원`).join(', '));
   nums.forEach((n,i)=>{if(n==null)return;const rect=document.createElementNS(svg.namespaceURI,'rect');rect.setAttribute('x',String(i*600/months.length+4));rect.setAttribute('y',String(125-n/max*110));rect.setAttribute('width',String(600/months.length-10));rect.setAttribute('height',String(Math.max(2,n/max*110)));rect.setAttribute('rx','4');rect.setAttribute('fill',i===months.length-1?'#0064e0':'#bdcbd6');const t=document.createElementNS(svg.namespaceURI,'title');t.textContent=`${monthLabel(months[i])} · ${fmt(n)}만원`;rect.append(t);svg.append(rect);});
   const caption=document.createElement('div');caption.className='chart-caption';caption.innerHTML='<span></span><span></span>';caption.children[0].textContent=monthLabel(months[0]);caption.children[1].textContent=`${monthLabel(months.at(-1))} · 결측은 빈칸`;
-  detail.append(eye,title,category,metrics,svg,caption);
-  if(fly) {map.flyTo({center:store.coordinates,zoom:17,pitch:$('view').getAttribute('aria-pressed')==='true'?52:0});document.querySelectorAll('.store-row').forEach(b=>b.classList.toggle('selected',b.firstChild.firstChild?.textContent===store.name));}
+  detail.append(eye,title,category);
+  renderVisitorDetails(store,detail,[metrics,svg,caption],month);
+  if(fly) {map.flyTo({center:store.coordinates,zoom:17,pitch:$('view').getAttribute('aria-pressed')==='true'?52:0});document.querySelectorAll('.store-row').forEach(b=>b.classList.toggle('selected',b.firstChild.firstChild?.textContent===store.name));if(document.body.classList.contains('map-focused'))setMapFocus(false);hideArrival();requestAnimationFrame(()=>detail.scrollIntoView({behavior:'smooth',block:'start'}));}
 }
 async function start() {
   const response=await fetch('data.json');if(!response.ok)throw new Error('data.json 로딩 실패'); data=await response.json();
+  try{const reviewsResponse=await fetch('restaurant-reviews.json');if(reviewsResponse.ok)restaurantReviews=await reviewsResponse.json();}catch(error){console.warn('후기 요약을 불러오지 못했습니다. 원문 검색 링크를 제공합니다.');}
   // Researched place descriptions live in a sidecar so regenerating data.json does not erase them.
   try {
     const infoResponse=await fetch('place-info.json');

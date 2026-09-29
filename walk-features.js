@@ -110,6 +110,10 @@ function showArrival(stop,index,arrived=true){
   const action=document.createElement('button');action.className='primary';action.textContent=arrived&&index<route.stops.length-1?'다음 장소로 걷기': '닫고 지도 보기';
   action.onclick=()=>{hideArrival();if(arrived&&index<route.stops.length-1){setPlaying(true);speak(`continue-${index}`,`${stop.name} 방문을 마치고 ${route.stops[index+1].name} 쪽으로 출발해요.`);renderPosition();}};
   arrivalCard.append(close,img,tag,title,warning,text,highlights,tip,stay,legLine,infoSource,caption,action);
+  if(stop.storeId&&['식사','간식'].includes(stop.kind)){
+    arrivalCard.insertBefore(reviewSection(stop.storeId,stop.name),stay);
+    const analyticsButton=document.createElement('button');analyticsButton.textContent='매출·연령·요일 분석 보기';analyticsButton.onclick=()=>{hideArrival();selectStore(stop.storeId,true);const stats=$('detail').querySelector('.store-analytics');if(stats)stats.open=true;};arrivalCard.append(analyticsButton);
+  }
   if(arrived&&index>=0&&index<route.stops.length-1){
     const pendingRoute=route;
     const autoNote=document.createElement('p');autoNote.className='arrival-leg';autoNote.textContent='10초 후 다음 장소로 자동 출발합니다.';
