@@ -25,7 +25,8 @@ function speak(key, text) {
 }
 function setPlaying(value) {
   playing=value; lastTime=null;
-  $('play').textContent=value?'Ⅱ 잠깐 멈춤':walked>=route.distance?'↻ 다시 걷기':'▶ 산책 시작';
+  $('play').textContent=value?'Ⅱ 일시정지':walked>=route.distance?'↻ 다시 걷기':walked>0?'▶ 이어 걷기':'▶ 산책 시작';
+  $('play').setAttribute('aria-pressed',String(value));
   walker.classList.toggle('walking',value && $('motion').checked);
   if (!value && walked>0 && walked<route.distance) speak('pause','잠깐 쉬어갈까요? 여기서 풍경을 둘러봐요.');
 }

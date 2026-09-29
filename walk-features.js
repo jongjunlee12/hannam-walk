@@ -27,7 +27,7 @@ playerToggle.onclick=()=>{
 };
 function updatePlayerLayout(){
   const panel=document.querySelector('.map-panel');
-  document.querySelector('.map-legend').style.bottom=`${panel.clientHeight-localBox(playerPanel).y+12}px`;
+  document.querySelector('.map-legend').style.bottom=matchMedia('(max-width:760px)').matches?'96px':`${panel.clientHeight-localBox(playerPanel).y+12}px`;
   scheduleLabels();
 }
 new ResizeObserver(updatePlayerLayout).observe(playerPanel);

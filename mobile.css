@@ -1,8 +1,13 @@
 /* Same URL, a map-first phone layout. Desktop styling stays unchanged. */
 .share-link{margin-left:0;font-size:15px;white-space:nowrap}
 .mobile-route-toggle{display:none}
+#play{background:#c62828;color:#fff;border:2px solid #c62828;font-weight:800;box-shadow:0 4px 12px #c6282833}
+#play:hover:not(:disabled){background:#a91d1d;border-color:#a91d1d}
+#play:focus-visible{outline:3px solid #172e49;outline-offset:3px}
+#play:disabled{background:#737b84;border-color:#737b84;box-shadow:none;opacity:1}
 .share-status{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#172e49;color:white;padding:12px 20px;border-radius:14px;z-index:50;font-size:15px;max-width:90vw}
 @media(max-width:760px){
+  body{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
   header{height:68px;margin:0 12px;gap:8px}
   header .brand{font-size:21px;gap:6px}
   header>button{font-size:13px;padding:8px;min-height:44px}
@@ -34,14 +39,17 @@
   .speech-bubble .bubble-leg{font-size:12px;line-height:1.45}
   .map-panel .poi-marker{position:relative}
   .map-panel .poi-marker::after{content:'';position:absolute;inset:-12px}
-  .map-panel .player{left:10px;right:10px;bottom:12px;padding:10px}
+  .map-panel .player,.map-panel .player.is-collapsed{position:fixed;left:10px;right:10px;bottom:max(10px,env(safe-area-inset-bottom));width:auto;max-width:none;padding:8px;border-radius:20px;z-index:15;max-height:45svh;overflow:auto;background:#fff;box-shadow:0 4px 24px #172e4933}
+  .map-panel .player.is-collapsed .player-top{display:flex;gap:8px}
+  .map-panel .player #play{flex:1;min-width:0;min-height:56px;font-size:19px;border-radius:14px;white-space:nowrap}
+  .map-panel .player #player-toggle{flex:0 0 auto;min-height:48px;font-size:13px;padding:8px 10px;margin-left:0}
   .player-top{gap:6px;flex-wrap:wrap}
   .player-top button,.player-top select{min-height:44px;font-size:14px}
   .player-top label{font-size:13px}
   .player .simulation-note{font-size:11px}
   .map-legend{left:12px;max-width:calc(100% - 24px);font-size:10px;padding:6px;gap:3px 8px}
   #label-count{top:68px;left:12px}
-  #arrival-card{left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));top:auto!important;width:auto;max-height:42vh!important;max-height:42svh!important;border-radius:20px;padding:16px;overscroll-behavior:contain}
+  #arrival-card{left:8px;right:8px;bottom:calc(90px + env(safe-area-inset-bottom));top:auto!important;width:auto;max-height:42vh!important;max-height:42svh!important;border-radius:20px;padding:16px;overscroll-behavior:contain}
   #arrival-card img{float:right;width:80px;height:70px;margin:30px 0 8px 12px}
   #arrival-card h3{font-size:21px;padding-right:30px}
   #arrival-card .arrival-close{right:12px;top:10px;width:44px;min-height:44px}

@@ -13,6 +13,9 @@ function setRouteFolded(folded){
 setRouteFolded(mobileScreen.matches);
 routeToggle.onclick=()=>setRouteFolded(!routePanel.classList.contains('mobile-folded'));
 if(!playerPanel.classList.contains('is-collapsed'))playerToggle.click();
+document.querySelector('#play').addEventListener('click',()=>{
+  if(mobileScreen.matches&&playing)document.querySelector('.map-panel').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+});
 const shareButton=document.createElement('button');shareButton.className='share-link';shareButton.type='button';shareButton.textContent='링크 공유';
 document.querySelector('header').append(shareButton);
 const shareStatus=document.createElement('div');shareStatus.className='share-status';shareStatus.hidden=true;shareStatus.setAttribute('role','status');document.body.append(shareStatus);
