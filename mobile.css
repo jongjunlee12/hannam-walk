@@ -1,0 +1,60 @@
+/* Same URL, a map-first phone layout. Desktop styling stays unchanged. */
+.share-link{margin-left:0;font-size:15px;white-space:nowrap}
+.mobile-route-toggle{display:none}
+.share-status{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#172e49;color:white;padding:12px 20px;border-radius:14px;z-index:50;font-size:15px;max-width:90vw}
+@media(max-width:760px){
+  header{height:68px;margin:0 12px;gap:8px}
+  header .brand{font-size:21px;gap:6px}
+  header>button{font-size:13px;padding:8px;min-height:44px}
+  header .share-link{margin-left:0}
+  main{padding:0 12px}
+  .intro{padding:20px 0 16px}
+  .intro h1{font-size:32px;line-height:1.2}
+  .intro h1 br{display:none}
+  .intro p{font-size:16px;margin-top:8px}
+  .intro p br{display:none}
+  .workspace{gap:10px;min-width:0}
+  .workspace .route-panel{padding:16px;max-height:none;overflow:visible}
+  .route-panel h2{font-size:23px;margin:0 0 12px}
+  .route-panel .eyebrow{display:none}
+  .route-panel select{font-size:16px;min-height:44px}
+  .mobile-route-toggle{display:block;width:100%;min-height:44px;margin-top:10px;font-size:15px}
+  .route-panel.mobile-folded>.muted,.route-panel.mobile-folded>.route-summary,
+  .route-panel.mobile-folded>#stops,.route-panel.mobile-folded>.notice,
+  .route-panel.mobile-folded>.avatar-settings,.route-panel.mobile-folded .day-note,
+  .route-panel.mobile-folded .landmark-index{display:none}
+  .day-alternatives{margin-top:10px}
+  .day-alternatives button{min-height:44px}
+  .workspace .map-panel{height:76vh;height:76svh;min-height:520px;border-radius:18px}
+  .map-top{top:12px;left:12px;right:12px;gap:6px}
+  .map-top button{font-size:13px;padding:8px;min-height:44px}
+  .map-tag{font-size:10px}
+  .map-panel .walker,.map-panel .walker svg{width:22.4px;height:32.2px}
+  .map-panel .speech-bubble{bottom:40px;width:190px;padding:10px 12px;font-size:15px}
+  .speech-bubble .bubble-leg{font-size:12px;line-height:1.45}
+  .map-panel .poi-marker{position:relative}
+  .map-panel .poi-marker::after{content:'';position:absolute;inset:-12px}
+  .map-panel .player{left:10px;right:10px;bottom:12px;padding:10px}
+  .player-top{gap:6px;flex-wrap:wrap}
+  .player-top button,.player-top select{min-height:44px;font-size:14px}
+  .player-top label{font-size:13px}
+  .player .simulation-note{font-size:11px}
+  .map-legend{left:12px;max-width:calc(100% - 24px);font-size:10px;padding:6px;gap:3px 8px}
+  #label-count{top:68px;left:12px}
+  #arrival-card{left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));top:auto!important;width:auto;max-height:42vh!important;max-height:42svh!important;border-radius:20px;padding:16px;overscroll-behavior:contain}
+  #arrival-card img{float:right;width:80px;height:70px;margin:30px 0 8px 12px}
+  #arrival-card h3{font-size:21px;padding-right:30px}
+  #arrival-card .arrival-close{right:12px;top:10px;width:44px;min-height:44px}
+  #arrival-card .primary{clear:both;min-height:44px}
+  .market{margin-top:28px}
+  .market h2{font-size:26px}
+  .filters{width:100%;display:grid;grid-template-columns:1fr;gap:10px}
+  .filters label,.filters input,.filters select{width:100%;min-width:0;font-size:16px}
+  .market-grid{grid-template-columns:minmax(0,1fr)}
+  .market-list,.store-detail{min-width:0;padding:16px}
+  .store-row{gap:10px;font-size:16px}
+  .store-row>span:first-child{min-width:0;overflow-wrap:anywhere}
+  .store-row .amount{white-space:nowrap;font-size:15px}
+  dialog{max-width:calc(100vw - 24px);max-height:85svh;padding:20px}
+  footer{flex-wrap:wrap;gap:10px;font-size:13px}
+}
