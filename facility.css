@@ -46,3 +46,5 @@
   .facility-types{padding:0 16px 8px}
   .facility-legend{display:none}
 }
+.facility-path{margin:8px 0 0!important;padding:8px 10px;border-radius:10px;background:var(--cat-tint);color:#172126!important;border-left:3px solid var(--cat);font-size:12px!important;line-height:1.45}
+.facility-path[hidden]{display:none}

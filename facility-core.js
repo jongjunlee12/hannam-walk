@@ -23,7 +23,8 @@
     const params=new URLSearchParams(search);
     const lat=Number(params.get('lat')),lng=Number(params.get('lng'));
     const center=Number.isFinite(lat)&&Number.isFinite(lng)&&lat&&lng?[lng,lat]:null;
-    return {center,name:(params.get('name')||'').slice(0,60)};
+    const id=(params.get('id')||'').slice(0,20);
+    return {center,name:(params.get('name')||'').slice(0,60),id:/^[\w-]*$/.test(id)?id:''};
   }
   root.FacilityCore={CATEGORIES,meters,within,circle,parseQuery};
   if(typeof module!=='undefined')module.exports=root.FacilityCore;

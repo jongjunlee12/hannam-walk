@@ -111,7 +111,7 @@ function showArrival(stop,index,arrived=true){
   action.onclick=()=>{hideArrival();if(arrived&&index<route.stops.length-1){setPlaying(true);speak(`continue-${index}`,`${stop.name} 방문을 마치고 ${route.stops[index+1].name} 쪽으로 출발해요.`);renderPosition();}};
   arrivalCard.append(close,img,tag,title,warning,text,highlights,tip,stay,legLine,infoSource,caption,action);
   const facilityButton=document.createElement('button');facilityButton.type='button';facilityButton.className='arrival-facility';facilityButton.textContent='주변시설 지도 ↗ (반경 500m·1km)';
-  facilityButton.onclick=()=>{const c=stop.placeCoordinates||stop.coordinates;window.open(`facility.html?lat=${c[1]}&lng=${c[0]}&name=${encodeURIComponent(stop.name)}`,'_blank','noopener');};
+  facilityButton.onclick=()=>{const c=stop.placeCoordinates||stop.coordinates;window.open(`facility.html?lat=${c[1]}&lng=${c[0]}&id=${encodeURIComponent(stop.id)}&name=${encodeURIComponent(stop.name)}`,'_blank','noopener');};
   arrivalCard.append(facilityButton);
   if(stop.storeId&&['식사','간식'].includes(stop.kind)){
     arrivalCard.insertBefore(reviewSection(stop.storeId,stop.name),stay);
