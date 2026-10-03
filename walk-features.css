@@ -19,3 +19,5 @@
 .player.is-collapsed .player-top>:not(#play):not(#player-toggle){display:none}
 .player.is-collapsed #play{white-space:nowrap}
 @media(max-width:760px){.map-panel .player.is-collapsed{max-width:calc(100% - 28px)}#player-toggle{font-size:14px;padding:8px 10px}}
+
+#arrival-card .arrival-facility{width:100%;font-size:15px;margin-top:6px;border-color:#1d5fb4;color:#1d5fb4;background:#e8f0fb}
