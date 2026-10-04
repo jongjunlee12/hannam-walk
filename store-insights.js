@@ -92,6 +92,28 @@ function foreignSection(store,month){
   }).catch(()=>{if(extra.isConnected){extra.replaceChildren(insightEl('p','국가·동반방문 자료를 불러오지 못했습니다.'));const retry=insightEl('button','다시 시도');retry.onclick=()=>{section.replaceWith(foreignSection(store,month));};extra.append(retry);}});
   return section;
 }
+const residenceCache=new Map();
+// Customer home areas (district / neighbourhood top 5) for one store-month; percentages are shares of all customers in the source.
+function residenceSection(store,month){
+  const section=insightEl('details',null,'store-analytics residence-insights');section.open=true;
+  section.append(insightEl('summary',`고객 거주지 TOP5 · ${monthLabel(month)}`));
+  const body=insightEl('div');section.append(body);body.textContent='거주지 자료를 불러오는 중입니다…';
+  if(!residenceCache.has(month))residenceCache.set(month,fetch(`residence/${month}.json`).then(r=>{if(!r.ok)throw Error('fetch');return r.json();}).catch(error=>{residenceCache.delete(month);throw error;}));
+  residenceCache.get(month).then(rows=>{
+    if(!body.isConnected)return;body.replaceChildren();
+    const item=rows[store.id];
+    if(!item||(!item.sgg.length&&!item.dong.length)){body.append(insightEl('p','이 매장·월의 거주지 자료가 없습니다.','muted'));return;}
+    body.append(insightEl('p','결제 고객의 거주지 상위 5곳입니다. %는 원자료의 전체 고객 대비 비율이라 상위 5곳 합이 100%가 아닐 수 있습니다. 건수는 원자료 값이며 거래건수와 단위가 다릅니다.','analytics-note'));
+    for(const [key,title,label] of [['sgg','거주 시군구 TOP5',r=>r[0]],['dong','거주 행정동 TOP5',r=>`${r[0]} · ${r[1]}`]]){
+      const list=item[key];if(!list.length)continue;
+      const box=insightEl('section',null,'insight-chart');box.append(insightEl('h4',title));
+      const peak=Math.max(1,...list.map(r=>r[r.length-1]||0));
+      list.forEach(r=>{const pct=r[r.length-1],count=r[r.length-2],row=insightEl('div',null,'distribution-row');row.append(insightEl('span',label(r)),insightEl('span',`${pct==null?'':pct.toFixed(1)+'%'}${count==null?'':' · '+fmt(count)}`));const bar=insightEl('div',null,'distribution-track'),fill=insightEl('i');fill.style.width=`${pct==null?0:pct/peak*100}%`;bar.append(fill);row.append(bar);box.append(row);});
+      box.append(insightEl('small',`상위 ${list.length}곳 합계 ${list.reduce((a,r)=>a+(r[r.length-1]||0),0).toFixed(1)}% · 막대는 1위 대비 길이`));body.append(box);
+    }
+  }).catch(()=>{if(body.isConnected){body.replaceChildren(insightEl('p','거주지 자료를 불러오지 못했습니다.'));const retry=insightEl('button','다시 시도');retry.onclick=()=>section.replaceWith(residenceSection(store,month));body.append(retry);}});
+  return section;
+}
 function renderVisitorDetails(store,detail,existingCharts,month){
   const poi=data.landmarks.find(p=>p.storeId===store.id),food=store.businessType==='음식'||['식사','간식'].includes(poi?.kind);
   if(food){
@@ -107,6 +129,6 @@ function renderVisitorDetails(store,detail,existingCharts,month){
     const previous=store.months[m]?.[0],valid=Number.isFinite(current)&&Number.isFinite(previous)&&previous>0;
     const item=insightEl('div');item.append(insightEl('strong',valid?`${((current-previous)/previous*100).toFixed(1)}%`:'비교 자료 없음'),insightEl('span',label));changes.append(item);
   });stats.append(changes);
-  const extra=insightEl('div');stats.append(extra);detail.append(foreignSection(store,month),stats);let requested=false;
+  const extra=insightEl('div');stats.append(extra);detail.append(foreignSection(store,month),residenceSection(store,month),stats);let requested=false;
   const load=()=>{if(stats.open&&!requested){requested=true;loadStoreAnalytics(store,month,extra);}};stats.addEventListener('toggle',load);load();
 }
