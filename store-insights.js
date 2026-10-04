@@ -107,10 +107,11 @@ function residenceSection(store,month){
     for(const [key,title,label] of [['sgg','거주 시군구 TOP5',r=>r[0]],['dong','거주 행정동 TOP5',r=>`${r[0]} · ${r[1]}`]]){
       const list=item[key];if(!list.length)continue;
       const box=insightEl('section',null,'insight-chart');box.append(insightEl('h4',title));
-      const peak=Math.max(1,...list.map(r=>r[r.length-1]||0));
-      list.forEach(r=>{const pct=r[r.length-1],count=r[r.length-2],row=insightEl('div',null,'distribution-row');row.append(insightEl('span',label(r)),insightEl('span',`${pct==null?'':pct.toFixed(1)+'%'}${count==null?'':' · '+fmt(count)}`));const bar=insightEl('div',null,'distribution-track'),fill=insightEl('i');fill.style.width=`${pct==null?0:pct/peak*100}%`;bar.append(fill);row.append(bar);box.append(row);});
-      box.append(insightEl('small',`상위 ${list.length}곳 합계 ${list.reduce((a,r)=>a+(r[r.length-1]||0),0).toFixed(1)}% · 막대는 1위 대비 길이`));body.append(box);
+      const peak=Math.max(1,...list.map(r=>r[r.length-2]||0));
+      list.forEach(r=>{const pct=r[r.length-2],count=r[r.length-3],row=insightEl('div',null,'distribution-row');row.append(insightEl('span',label(r)),insightEl('span',`${pct==null?'':pct.toFixed(1)+'%'}${count==null?'':' · '+fmt(count)}`));const bar=insightEl('div',null,'distribution-track'),fill=insightEl('i');fill.style.width=`${pct==null?0:pct/peak*100}%`;bar.append(fill);row.append(bar);box.append(row);});
+      box.append(insightEl('small',`상위 ${list.length}곳 합계 ${list.reduce((a,r)=>a+(r[r.length-2]||0),0).toFixed(1)}% · 막대는 1위 대비 길이`));body.append(box);
     }
+    if(typeof residenceMapButtons==='function')body.append(residenceMapButtons(store,month,residenceCache.get(month)));
   }).catch(()=>{if(body.isConnected){body.replaceChildren(insightEl('p','거주지 자료를 불러오지 못했습니다.'));const retry=insightEl('button','다시 시도');retry.onclick=()=>section.replaceWith(residenceSection(store,month));body.append(retry);}});
   return section;
 }
