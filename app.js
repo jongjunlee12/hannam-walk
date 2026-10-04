@@ -132,6 +132,7 @@ function selectStore(id,fly) {
   if(fly) {map.flyTo({center:store.coordinates,zoom:17,pitch:$('view').getAttribute('aria-pressed')==='true'?52:0});document.querySelectorAll('.store-row').forEach(b=>b.classList.toggle('selected',b.firstChild.firstChild?.textContent===store.name));if(document.body.classList.contains('map-focused'))setMapFocus(false);hideArrival();requestAnimationFrame(()=>detail.scrollIntoView({behavior:'smooth',block:'start'}));}
 }
 async function start() {
+  $('speech').checked=true;$('motion').checked=true;walker.dataset.motion='on';
   const response=await fetch('data.json');if(!response.ok)throw new Error('data.json 로딩 실패'); data=await response.json();
   try{const reviewsResponse=await fetch('restaurant-reviews.json');if(reviewsResponse.ok)restaurantReviews=await reviewsResponse.json();}catch(error){console.warn('후기 요약을 불러오지 못했습니다. 원문 검색 링크를 제공합니다.');}
   // Researched place descriptions live in a sidecar so regenerating data.json does not erase them.
@@ -169,7 +170,8 @@ async function start() {
   $('reset').onclick=()=>{walked=0;dialogue.reset();hideArrival();setPlaying(false);lastSpeech='';renderPosition();fitRoute();};
   $('progress').oninput=()=>{hideArrival();walked=Number($('progress').value)/1000*route.distance;lastSpeech='';renderPosition();const near=route.stops.findIndex((s,i)=>i>0&&Math.abs(s.at-walked)<20);if(near>=0){walked=route.stops[near].at;setPlaying(false);renderPosition();showArrival(route.stops[near],near,true);}};
   $('speech').onchange=()=>{$('bubble').hidden=!$('speech').checked;};
-  $('motion').checked=!matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Walking motion is on by default (explicit opt-in also under OS reduced motion); the checkbox stays the opt-out.
+  $('motion').checked=true;walker.dataset.motion='on';
   $('motion').onchange=()=>{walker.dataset.motion=$('motion').checked?'on':'off';walker.classList.toggle('walking',playing && $('motion').checked);};
   $('view').onclick=()=>{const active=$('view').getAttribute('aria-pressed')!=='true';$('view').setAttribute('aria-pressed',String(active));$('view').textContent=active?'3D 켜짐':'2D 보기';map.easeTo({pitch:active?52:0,bearing:active?-18:0});map.setLayoutProperty('buildings','visibility',active?'visible':'none');};
   $('fit').onclick=fitRoute;
