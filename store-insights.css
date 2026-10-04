@@ -13,3 +13,8 @@
 .age-radar{display:block;width:100%;max-width:380px;margin:0 auto}.insight-chart small{font-size:13px;color:#526773}
 #arrival-card .visitor-review{padding:12px}#arrival-card .visitor-review h4{font-size:17px}
 @media(max-width:760px){.visitor-review{padding:12px}.insight-chart{padding:12px}.store-analytics>summary{font-size:17px}.distribution-row{font-size:14px}.store-analytics .metric-row strong{font-size:20px}}
+.foreign-insights{border-top:0;padding-top:0}
+.companion-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0;font-size:15px}
+.companion-row button{min-height:40px;padding:6px 14px;font-size:15px;font-weight:500;text-align:left;border-radius:12px}
+.companion-row strong{white-space:nowrap;font-variant-numeric:tabular-nums}
+@media(max-width:760px){.companion-row{font-size:14px}.companion-row button{font-size:14px}}

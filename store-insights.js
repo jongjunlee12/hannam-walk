@@ -56,6 +56,42 @@ async function loadStoreAnalytics(store,month,target){
     const times=['아침05-11','점심11-15','오후15-18','저녁18-20','밤20-22','심야22-01','새벽01-05'];target.append(distribution(times,times.map(t=>get('시간_'+t)),'시간대별 분포'));
   }catch(error){if(target.isConnected){target.replaceChildren(insightEl('p','상세 자료를 불러오지 못했습니다.'));const retry=insightEl('button','다시 시도');retry.onclick=()=>loadStoreAnalytics(store,month,target);target.append(retry);}}
 }
+let foreignInsightsPromise=null;
+function loadForeignInsights(){
+  if(!foreignInsightsPromise)foreignInsightsPromise=fetch('foreign-insights.json').then(r=>{if(!r.ok)throw Error('fetch');return r.json();}).catch(error=>{foreignInsightsPromise=null;throw error;});
+  return foreignInsightsPromise;
+}
+// Foreign card sales: share trend, paying countries and same-day companion stores (source months 2024.04 onward).
+function foreignSection(store,month){
+  const section=insightEl('details',null,'store-analytics foreign-insights');
+  const months=data.months.filter(m=>m>='202404'&&m<=month).slice(-12),shares=months.map(m=>{const v=store.months[m];return v&&Number.isFinite(v[0])&&Number.isFinite(v[1])&&v[0]>0?v[1]/v[0]*100:null;});
+  const hasAny=shares.some(v=>v!=null);
+  section.open=hasAny;
+  section.append(insightEl('summary',`외국인 결제 · 국가·동반방문 · ${monthLabel(month)}`));
+  if(!hasAny){section.append(insightEl('p',month<'202404'?'외국인 결제 자료는 2024.04부터 제공됩니다. 기준월을 2024.04 이후로 바꿔 보세요.':'이 매장은 최근 12개월 외국인 결제 관측이 없습니다.','muted'));return section;}
+  section.append(insightEl('p','외국인 매출은 원자료의 외국인 카드 결제 합계(만원)이며 총매출 = 내국인 + 외국인입니다. 국가 순위는 결제 금액(만원) 기준 상위 5개국(원자료 열 이름은 건수이나 값은 외국인 매출과 합산 일치), 동반방문은 같은 날 같은 고객이 결제한 다른 매장 상위 5곳입니다.','analytics-note'));
+  const trend=insightEl('section',null,'insight-chart');trend.append(insightEl('h4','외국인 매출 비중 추이 · 최근 12개월'));
+  const peak=Math.max(1,...shares.filter(v=>v!=null));
+  months.forEach((m,i)=>{const row=insightEl('div',null,'distribution-row'),v=shares[i];row.append(insightEl('span',monthLabel(m)),insightEl('span',v==null?'자료 없음':`${v.toFixed(1)}% · ${fmt(store.months[m][1])}만원`));const bar=insightEl('div',null,'distribution-track'),fill=insightEl('i');fill.style.width=`${v==null?0:v/peak*100}%`;bar.append(fill);row.append(bar);trend.append(row);});
+  trend.append(insightEl('small','막대는 기간 내 최고 비중 대비 길이입니다.'));section.append(trend);
+  const extra=insightEl('div');section.append(extra);extra.textContent='국가·동반방문 자료를 불러오는 중입니다…';
+  loadForeignInsights().then(all=>{
+    if(!extra.isConnected)return;extra.replaceChildren();
+    const item=all[store.id]||{countries:{},companions:{}},countries=item.countries[month]||[],companions=item.companions[month]||[];
+    if(countries.length){const total=countries.reduce((a,r)=>a+r[1],0);extra.append(distribution(countries.map(r=>r[0]),countries.map(r=>r[1]),`외국인 결제 국가 TOP${countries.length} · 결제 금액(만원)`));extra.lastChild.append(insightEl('small',`상위 ${countries.length}개국 합계 ${fmt(total)}만원 기준 구성비 · 이 달 외국인 매출 ${fmt(store.months[month]?.[1])}만원의 ${store.months[month]?.[1]>0?(total/store.months[month][1]*100).toFixed(0):'?'}% · 외국인 결제 ${fmt(store.months[month]?.[2])}건`));}
+    else extra.append(insightEl('p',`${monthLabel(month)}의 국가별 결제 순위 자료가 없습니다.`,'muted'));
+    const box=insightEl('section',null,'insight-chart');box.append(insightEl('h4',`같은 날 함께 방문한 매장 TOP${companions.length||5} · ${monthLabel(month)}`));
+    if(!companions.length)box.append(insightEl('p','이 매장·월의 동반방문 자료가 없습니다.','muted'));
+    companions.forEach(([label,count,id],i)=>{
+      const row=insightEl('div',null,'companion-row');
+      if(id){const b=insightEl('button',`${i+1}. ${label}`);b.type='button';b.onclick=()=>selectStore(id,true);row.append(b);}
+      else row.append(insightEl('span',`${i+1}. ${label}`));
+      row.append(insightEl('strong',`${fmt(count)}회`));box.append(row);
+    });
+    box.append(insightEl('small','동반방문 횟수는 원자료 값이며 전체 고객이 아닌 관측 표본입니다. 한남동 밖 매장은 점포 ID만 제공됩니다.'));extra.append(box);
+  }).catch(()=>{if(extra.isConnected){extra.replaceChildren(insightEl('p','국가·동반방문 자료를 불러오지 못했습니다.'));const retry=insightEl('button','다시 시도');retry.onclick=()=>{section.replaceWith(foreignSection(store,month));};extra.append(retry);}});
+  return section;
+}
 function renderVisitorDetails(store,detail,existingCharts,month){
   const poi=data.landmarks.find(p=>p.storeId===store.id),food=store.businessType==='음식'||['식사','간식'].includes(poi?.kind);
   if(food){
@@ -64,12 +100,13 @@ function renderVisitorDetails(store,detail,existingCharts,month){
     detail.append(reviewSection(store.id,store.name));
   }
   const stats=insightEl('details',null,'store-analytics');stats.open=!food;
-  stats.append(insightEl('summary',`매출·방문 패턴 자세히 보기 · ${monthLabel(month)}`),...existingCharts);
+  const [metricsRow,...charts]=existingCharts;detail.append(metricsRow);
+  stats.append(insightEl('summary',`매출·방문 패턴 자세히 보기 · ${monthLabel(month)}`),...charts);
   const changes=insightEl('div',null,'metric-row'),at=data.months.indexOf(month),current=store.months[month]?.[0];
   [['전월 대비',data.months[at-1]],['전년 동월 대비',String(Number(month.slice(0,4))-1)+month.slice(4)]].forEach(([label,m])=>{
     const previous=store.months[m]?.[0],valid=Number.isFinite(current)&&Number.isFinite(previous)&&previous>0;
     const item=insightEl('div');item.append(insightEl('strong',valid?`${((current-previous)/previous*100).toFixed(1)}%`:'비교 자료 없음'),insightEl('span',label));changes.append(item);
   });stats.append(changes);
-  const extra=insightEl('div');stats.append(extra);detail.append(stats);let requested=false;
+  const extra=insightEl('div');stats.append(extra);detail.append(foreignSection(store,month),stats);let requested=false;
   const load=()=>{if(stats.open&&!requested){requested=true;loadStoreAnalytics(store,month,extra);}};stats.addEventListener('toggle',load);load();
 }
